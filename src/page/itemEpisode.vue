@@ -51,9 +51,10 @@ export default {
 <style scoped>
 .card__video{
   background-color: #000;
-  width: 100%;
-  height: 500px;
+  width: 280px;
+  height: 150px;
   position: relative;
+  margin: 0 auto;
   margin-bottom: 48px;
 }
 
@@ -85,6 +86,13 @@ export default {
   font-weight: bold;
   margin-bottom: 24px;
   color: #E3E3E3;
+}
+
+@media screen and (min-width: 768px){
+  .card__video{
+    width: 100%;
+    height: 500px;
+  }
 }
 
 </style>

@@ -70,7 +70,7 @@ export default {
 .filters{
   display: flex;
   align-items: center;
-  margin-left: 24px;
+  margin-top: 24px;
 }
 
 .filter{
@@ -111,7 +111,6 @@ export default {
 }
 
 .checkbox-input:checked ~ .checkbox:before{
-  /*background-image: url("../img/check.svg");*/
   border-color: #298D4C;
   background-color: #298D4C;
 }
@@ -120,5 +119,12 @@ export default {
   display: block;
   margin-left: 8px;
   font-size: 14px;
+}
+
+@media screen and (min-width: 768px){
+  .filters{
+    margin-top: 0;
+    margin-left: 24px;
+  }
 }
 </style>

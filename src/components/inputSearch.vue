@@ -37,6 +37,7 @@ export default {
   font-size: 14px;
   transition: 200ms;
   font-weight: 500;
+  width: 100%;
 }
 
 .input-search:hover{

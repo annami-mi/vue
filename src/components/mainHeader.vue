@@ -41,15 +41,18 @@ export default {
 <style scoped>
 header{
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 16px;
 }
 
 .nav{
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 32px 0
+  margin-bottom: 32px;
 }
+
+
 .nav__link{
   background: transparent;
   border-radius: 26px;
@@ -84,8 +87,24 @@ header{
 }
 
 .logo{
-  width: 500px;
+  width: 60%;
 }
+
+@media screen and (min-width: 768px){
+  header{
+    margin-bottom: 32px;
+  }
+  .logo{
+    width: 500px;
+  }
+  .nav{
+    flex-direction: row;
+    padding: 32px 0;
+    margin-bottom: 0;
+  }
+}
+
+
 
 
 </style>

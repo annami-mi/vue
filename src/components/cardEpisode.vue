@@ -60,7 +60,6 @@ export default {
   font-weight: bold;
   margin-bottom: 16px;
   color: #E3E3E3;
-
 }
 
 </style>

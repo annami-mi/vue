@@ -1,7 +1,9 @@
 <template>
   <ul class="list">
     <li v-for="character of characters"
-        :key="character.id">
+        :key="character.id"
+        class="item"
+    >
       <card-character :character_data="character"></card-character>
     </li>
   </ul>
@@ -40,9 +42,20 @@ export default {
 
 <style scoped>
 .list{
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-gap: 24px;
   list-style: none;
+}
+.item{
+  margin-bottom: 24px;
+}
+
+@media screen and (min-width: 768px){
+  .list{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 24px;
+  }
+  .item{
+    margin-bottom: 0;
+  }
 }
 </style>

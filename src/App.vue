@@ -64,22 +64,26 @@ body{
 
 .container{
   max-width: 900px;
-  margin: 0 auto
+  margin: 0 auto;
+  padding: 0 16px;
 }
 
 .headline{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin: 32px 0 48px;
 }
 
-.search{
-  display: flex;
-  align-items: center;
+@media screen and (min-width: 768px){
+  .headline{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 32px 0 48px;
+  }
+  .search{
+    display: flex;
+    align-items: center;
+  }
 }
-
-
 
 
 </style>

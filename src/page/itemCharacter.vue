@@ -104,24 +104,17 @@ export default {
     } else {
       this.locationUnknown = true
     }
-    //
-    // console.log(this.originId)
-    // console.log(this.locationId)
-
-
-
   },
 }
 </script>
 
 <style scoped>
-.profile{
-  display: flex;
-}
+
 .profile__img{
-  width: 250px;
+  width: 100%;
+  object-fit: cover;
   height: 250px;
-  margin-right: 24px;
+  margin-bottom: 24px;
 }
 .profile__title{
   font-size: 32px;
@@ -203,6 +196,17 @@ export default {
 }
 .profile__section{
   margin-top: 32px;
+}
+
+@media screen and (min-width: 768px){
+  .profile{
+    display: flex;
+  }
+  .profile__img{
+    width: 250px;
+    margin-bottom: 0;
+    margin-right: 24px;
+  }
 }
 
 </style>

@@ -1,6 +1,7 @@
 <template>
   <ul class="list">
-    <li v-for="location of locations"
+    <li class="item"
+        v-for="location of locations"
         :key="location.id">
       <card-location :location_info="location"></card-location>
     </li>
@@ -38,9 +39,21 @@ export default {
 <style scoped>
 .list{
   list-style: none;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-gap: 16px;
 }
 
+.item{
+  margin-bottom: 56px;
+}
+
+@media screen and (min-width: 768px) {
+  .list {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 32px;
+  }
+
+  .item {
+    margin-bottom: 0;
+  }
+}
 </style>

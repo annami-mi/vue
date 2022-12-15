@@ -45,10 +45,27 @@ export default {
   color: #E3E3E3;
   margin-right: 16px;
   transition: 200ms;
+  white-space: nowrap;
 }
 
 .link--active,
 .link:hover{
   color: #39C569;
+}
+
+.groups{
+  margin-bottom: 24px;
+  display: flex;
+  overflow-x: auto;
+}
+
+.groups::-webkit-scrollbar{
+  width: 0;
+  height: 0;
+}
+@media screen and (min-width: 768px){
+  .groups{
+    margin-bottom: 0;
+  }
 }
 </style>
