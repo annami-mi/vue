@@ -8,21 +8,21 @@
         class="nav__link"
         active-class="nav__link--active"
     >
-      Эпизоды
+      Episodes
     </router-link>
     <router-link
         :to="{name: 'charactersPage'}"
         class="nav__link"
         active-class="nav__link--active"
     >
-      Персонажи
+      Characters
     </router-link>
     <router-link
         :to="{name: 'locationsPage'}"
         class="nav__link"
         active-class="nav__link--active"
     >
-      Локации
+      Location
     </router-link>
   </nav>
 </template>
