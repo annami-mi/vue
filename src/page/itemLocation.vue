@@ -32,13 +32,7 @@ export default {
     let location = await res.json();
     this.location = location;
 
-    // location = Array.isArray(location) ? location : [location]
-
-
     this.linksCharacters = location.residents;
-    // console.log(location)
-    // console.log(location.residents)
-
 
     for (let link of this.linksCharacters) {
       const segments = new URL(link).pathname.split('/');
@@ -48,7 +42,9 @@ export default {
 
     const linkApiCh = (items = this.idCharacters) => `https://rickandmortyapi.com/api/character/${items}`;
     const resCh = await fetch(linkApiCh());
-    const character = await resCh.json();
+    let character = await resCh.json();
+
+    character = Array.isArray(character) ? character : [character]
     this.characters = character;
   },
 
