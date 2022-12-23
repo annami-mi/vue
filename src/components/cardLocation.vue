@@ -45,12 +45,13 @@ export default {
   display: flex;
   cursor: pointer;
   transition: 200ms;
-  overflow: hidden;
-  border-radius: 0 16px 16px 0;
+  /*overflow: hidden;*/
+  border-radius: 16px;
   text-decoration: none;
   height: 100%;
   position: relative;
   top: 0;
+  background-color: #424758;
 }
 
 .card:hover{
@@ -62,14 +63,18 @@ export default {
   min-height: 100px;
   object-fit: contain;
   display: block;
-  margin-right: 16px;
+  margin-right: 24px;
+  position: relative;
+  left: 16px;
+  top: -16px;
 }
 
 .card__content{
   background-color: #424758;
   padding: 16px;
   color: #E3E3E3;
-  width: 100%
+  width: 100%;
+  border-radius: 0 16px 16px 0;
 }
 
 .card__title{

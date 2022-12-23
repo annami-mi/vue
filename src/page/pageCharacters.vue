@@ -79,11 +79,11 @@ export default {
       let link;
 
       if(!searchName == '' ){
-        (status == 'Alive' || status == 'Dead')
+        (status == 'Alive' || status == 'Dead' || status == 'unknown' )
             ? link = (name = searchName, id = this.status) => `${this.linkApi}?status=${id}&name=${name}`
             : link = (name = searchName) => `${this.linkApi}?name=${name}`
       } else {
-        (status == 'Alive' || status == 'Dead')
+        (status == 'Alive' || status == 'Dead' || status == 'unknown')
             ? link = (id = this.status) => `${this.linkApi}?status=${id}`
             : link = () => this.linkApi
       }
@@ -120,8 +120,9 @@ export default {
       let response;
       let characters;
 
+      console.log(status)
         // проверка на наличие статуса и получение нужной ссылки
-        if(status == 'Alive' || status == 'Dead'){
+        if(status == 'Alive' || status == 'Dead' || status == 'unknown'){
           // проверка на наличие поискового запроса и формирование ссылки с нужными параметрами
           (this.searchName === '')
               ? link = (id = status) => `${this.linkApi}?status=${id}`

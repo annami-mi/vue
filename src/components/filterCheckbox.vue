@@ -41,6 +41,19 @@
       <span class="checkbox-label">Dead</span>
     </div>
 
+    <div class="filter">
+      <input
+          id="statusUnknown"
+          class="checkbox-input"
+          type="radio"
+          name="status"
+          v-model="statusLive"
+          value="unknown"
+      >
+      <label class="checkbox" for="statusUnknown"></label>
+      <span class="checkbox-label">Unknown</span>
+    </div>
+
 
   </div>
 </template>
