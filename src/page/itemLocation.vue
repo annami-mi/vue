@@ -30,17 +30,12 @@ export default {
 
     const res = await fetch(linkApi());
     let location = await res.json();
-
-    console.log(location)
-    location = Array.isArray(location) ? location : [location]
-    console.log(location)
-
-    console.log(location?.residents)
-    console.log(Object.keys(location))
-
     this.location = location;
 
-    // this.linksCharacters = location.residents;
+    // location = Array.isArray(location) ? location : [location]
+
+
+    this.linksCharacters = location.residents;
     // console.log(location)
     // console.log(location.residents)
 
