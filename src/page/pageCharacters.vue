@@ -1,5 +1,4 @@
 <template>
-
   <div class="headline">
     <div class="search">
       <input-search @filteringItems="searchText"></input-search>
@@ -8,7 +7,7 @@
   </div>
 
   <list-characters :characters_data="this.characters"></list-characters>
-
+  <div v-if="notFound">not found</div>
   <buttons-pagination @click="showMoreItems" v-if="!hideButtonMore"></buttons-pagination>
 
 </template>
@@ -25,12 +24,13 @@ export default {
   data(){
     return{
       characters:[],
+      charactersNextPage: '',
+      stopScroll: false,
       hideButtonMore: false,
-      nextPage: 2,
-      pages: Number,
       searchName: '',
       status:[],
       linkApi: 'https://rickandmortyapi.com/api/character/',
+      notFound: false
     }
   },
   methods:{
@@ -38,28 +38,28 @@ export default {
 
     // Бесконечная прокрутка START
     async showMoreItems(){
-      const list = this.characters;
-      const loadPage = this.nextPage;
+      try {
+        const nextPage = this.charactersNextPage;
+        const list = this.characters;
+        const response = await fetch(nextPage);
+        const characters = await response.json();
+        this.charactersNextPage = characters.info.next
 
-      const linkApi = (page = loadPage) => `https://rickandmortyapi.com/api/character/?page=${page}`
-      const res = await fetch(linkApi());
-      const characters = await res.json();
-      this.pages = characters.info.pages
-
-      if(this.nextPage <= this.pages){
         const all = list.concat(characters.results);
         this.characters = all
         this.hideButtonMore = true
         this.listenerScroll();
+        this.stopScroll = false
+
+      } catch (e){
+        console.log('end')
       }
     },
 
     listenerScroll(){
       window.onscroll = () => {
         let bottomOfWindow = document.documentElement.scrollTop + window.innerHeight === document.documentElement.offsetHeight;
-
-        if (bottomOfWindow && this.nextPage < this.pages ) {
-          this.nextPage = this.nextPage + 1;
+        if (bottomOfWindow && !this.stopScroll) {
           this.showMoreItems()
         }
       };
@@ -72,18 +72,37 @@ export default {
     },
 
     async filterCharacters(){
-      const searchName = this.searchName;
+      this.stopScroll = true
 
-      if(searchName == ''){
-        this.hideButtonMore = false;
+      const searchName = this.searchName;
+      const status = this.status;
+      let link;
+
+      if(!searchName == '' ){
+        (status == 'Alive' || status == 'Dead')
+            ? link = (name = searchName, id = this.status) => `${this.linkApi}?status=${id}&name=${name}`
+            : link = (name = searchName) => `${this.linkApi}?name=${name}`
       } else {
-        this.hideButtonMore = true;
+        (status == 'Alive' || status == 'Dead')
+            ? link = (id = this.status) => `${this.linkApi}?status=${id}`
+            : link = () => this.linkApi
       }
 
-      const linkApi = (name = searchName) => `https://rickandmortyapi.com/api/character/?name=${name}`
-      const res = await fetch(linkApi());
-      const characters = await res.json();
-      this.characters = characters.results;
+      let response;
+      let characters;
+
+      try{
+        response = await fetch(link());
+        characters = await response.json();
+        this.characters = characters.results;
+        this.charactersNextPage = characters.info.next;
+        this.notFound = false;
+        // показывать кнопку more если есть следующая страница в ответе от сервера
+        (this.charactersNextPage) ? this.hideButtonMore = false : this.hideButtonMore = true
+      } catch (e){
+        this.notFound = true
+      }
+
     },
     // Поиск по названию
 
@@ -92,32 +111,53 @@ export default {
       this.status = obj
     },
     async filterOfStatus(){
+      this.stopScroll = true
+
+      // получение статуса из data
       const status = this.status;
-        if(status == 'Alive'){
-          const linkApi = (id = status) => `https://rickandmortyapi.com/api/character/?status=${id}`
-          const res = await fetch(linkApi());
-          const characters = await res.json();
-          this.characters = characters.results;
-        } else if (status == 'Dead') {
-          const linkApi = (id = status) => `https://rickandmortyapi.com/api/character/?status=${id}`
-          const res = await fetch(linkApi());
-          const characters = await res.json();
-          this.characters = characters.results;
+      // хранинение новой ссылки API и полученого запроса json
+      let link;
+      let response;
+      let characters;
+
+        // проверка на наличие статуса и получение нужной ссылки
+        if(status == 'Alive' || status == 'Dead'){
+          // проверка на наличие поискового запроса и формирование ссылки с нужными параметрами
+          (this.searchName === '')
+              ? link = (id = status) => `${this.linkApi}?status=${id}`
+              : link = (id = status, name = this.searchName) => `${this.linkApi}?status=${id}&name=${name}`
         } else {
-          const linkApi = 'https://rickandmortyapi.com/api/character/';
-          const res = await fetch(linkApi);
-          const characters = await res.json();
-          this.characters = characters.results;
+          (this.searchName === '')
+              ? link = () => this.linkApi
+              : link = (name = this.searchName) => `${this.linkApi}?name=${name}`
         }
+
+      // перезаписываем данные по полученым массивам
+      try {
+        response = await fetch(link());
+        characters = await response.json();
+        this.characters = characters.results;
+        this.charactersNextPage = characters.info.next;
+        this.notFound = false;
+
+        // показывать кнопку more если есть следующая страница в ответе от сервера
+        (characters.info.next) ? this.hideButtonMore = false : this.hideButtonMore = true
+      } catch (e) {
+        this.notFound = true
+      }
+
     },
     // Фильтр по статусу
   },
 
   async mounted() {
-      const linkApi = `https://rickandmortyapi.com/api/character/`;
-      const res = await fetch(linkApi);
-      const characters = await res.json();
+      const linkApi = this.linkApi;
+      const response = await fetch(linkApi);
+      const characters = await response.json();
       this.characters = characters.results;
+
+      // при отрисовке запись следующей страницы без query параметров
+      this.charactersNextPage = characters.info.next;
   },
   watch:{
     searchName(){

@@ -1,14 +1,25 @@
 <template>
   <router-link
-      class="location__card"
+      class="card"
       :to="{name: 'locationItem', params: {id:location.id} }">
-    <div class="portal">
-      <div class="location">
-        <div class="location__name">{{location.name}}</div>
-        <div class="location__type">{{location.type}}</div>
-        <div class="location__type">{{location.dimension}}</div>
-      </div>
+
+    <img class="card__img" src='../img/portal.png'>
+
+    <div class="card__content">
+
+      <p class="card__title">{{location.name}}</p>
+      <p class="card__status">{{location.type}}</p>
+      <p class="card__species">{{location.dimension}}</p>
+
     </div>
+
+<!--    <div class="portal">-->
+<!--      <div class="location">-->
+<!--        <div class="location__name">{{location.name}}</div>-->
+<!--        <div class="location__type">{{location.type}}</div>-->
+<!--        <div class="location__type">{{location.dimension}}</div>-->
+<!--      </div>-->
+<!--    </div>-->
   </router-link>
 </template>
 
@@ -29,45 +40,51 @@ export default {
 </script>
 
 <style scoped>
-.portal{
-  width: 300px;
-  height: 300px;
-  background: url("../img/portal.png") no-repeat center / contain;
+.card{
+  list-style: none;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-.location{
-  position: relative;
-  text-align: center;
-  background-color: rgba(255,255,255, .5);
-  padding: 24px;
-  border-radius: 4px;
-}
-
-.location__name{
-  font-size: 24px;
-  font-weight: bold;
-  color: #242731;
-  margin-bottom: 16px;
-
-}
-
-.location__card{
-  text-decoration: none;
-  display: flex;
-  justify-content: center;
+  cursor: pointer;
   transition: 200ms;
-  margin-bottom: 48px;
+  overflow: hidden;
+  border-radius: 0 16px 16px 0;
+  text-decoration: none;
+  height: 100%;
+  position: relative;
+  top: 0;
 }
 
-.location__card:hover{
-  transform: scale(1.1);
+.card:hover{
+  top: -10px;
 }
 
-.location__type{
-  margin: 8px 0;
-  color: #242731;
+.card__img{
+  width: 100px;
+  min-height: 100px;
+  object-fit: contain;
+  display: block;
+  margin-right: 16px;
+}
+
+.card__content{
+  background-color: #424758;
+  padding: 16px;
+  color: #E3E3E3;
+  width: 100%
+}
+
+.card__title{
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.card__status{
+  position: relative;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.card__species{
+  font-size: 14px;
 }
 </style>

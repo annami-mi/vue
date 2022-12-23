@@ -7,6 +7,7 @@
   </div>
 
   <list-location :locations_data="this.locations"></list-location>
+  <div v-if="notFound">not found</div>
   <buttons-pagination @click="showMoreItems" v-if="!hideButtonMore"></buttons-pagination>
 </template>
 
@@ -24,37 +25,38 @@ export default {
   data(){
     return{
       locations:[],
+      locationsNextPage: '',
       hideButtonMore: false,
-      nextPage: 2,
-      pages: Number,
       searchName: '',
+      stopScroll: false,
+      linkApi: 'https://rickandmortyapi.com/api/location/',
+      notFound: false
     }
   },
   methods:{
     // Бесконечная прокрутка START
     async showMoreItems(){
-      const list = this.locations;
-      const loadPage = this.nextPage;
+      try {
+        const nextPage = this.locationsNextPage;
+        const list = this.locations;
+        const response = await fetch(nextPage);
+        const locations = await response.json();
+        this.locationsNextPage = locations.info.next
 
-      const linkApi = (page = loadPage) => `https://rickandmortyapi.com/api/location/?page=${page}`
-      const res = await fetch(linkApi());
-      const locations = await res.json();
-      this.pages = locations.info.pages
-
-      if(this.nextPage <= this.pages) {
         const all = list.concat(locations.results);
         this.locations = all
         this.hideButtonMore = true
         this.listenerScroll();
+
+      } catch (e){
+        console.log('end')
       }
     },
 
     listenerScroll(){
       window.onscroll = () => {
         let bottomOfWindow = document.documentElement.scrollTop + window.innerHeight === document.documentElement.offsetHeight;
-
-        if (bottomOfWindow && this.nextPage < this.pages) {
-          this.nextPage = this.nextPage + 1;
+        if (bottomOfWindow && !this.stopScroll) {
           this.showMoreItems()
         }
       };
@@ -67,18 +69,27 @@ export default {
     },
 
     async filterLocations(){
-      const searchName = this.searchName;
+      const search = this.searchName;
+      let link;
 
-      if(searchName == ''){
-        this.hideButtonMore = false;
-      } else {
-        this.hideButtonMore = true;
+      (!search == '' )
+          ? link = (name = search) => `${this.linkApi}?name=${name}`
+          : link = () => this.linkApi
+
+      let response;
+      let locations;
+
+      try{
+        response = await fetch(link());
+        locations = await response.json();
+        this.locations = locations.results;
+        this.locationsNextPage = locations.info.next;
+        this.notFound = false;
+        // показывать кнопку more если есть следующая страница в ответе от сервера
+        (this.locationsNextPage) ? this.hideButtonMore = false : this.hideButtonMore = true
+      } catch (e){
+        this.notFound = true
       }
-
-      const linkApi = (name = searchName) => `https://rickandmortyapi.com/api/location/?name=${name}`
-      const res = await fetch(linkApi());
-      const locations = await res.json();
-      this.locations = locations.results;
     },
     // Поиск по названию
   },
@@ -87,6 +98,9 @@ export default {
     const resLoc = await fetch(linkApiLoc());
     const locations = await resLoc.json();
     this.locations = locations.results;
+
+    // при отрисовке запись следующей страницы без query параметров
+    this.locationsNextPage = locations.info.next;
   },
   watch:{
     searchName(){

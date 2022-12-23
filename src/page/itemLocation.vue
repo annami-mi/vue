@@ -27,10 +27,23 @@ export default {
   async mounted() {
     const idLocation = this.$route.params.id;
     const linkApi = (id = idLocation) => `https://rickandmortyapi.com/api/location/${id}`;
+
     const res = await fetch(linkApi());
-    const location = await res.json();
+    let location = await res.json();
+
+    console.log(location)
+    location = Array.isArray(location) ? location : [location]
+    console.log(location)
+
+    console.log(location?.residents)
+    console.log(Object.keys(location))
+
     this.location = location;
-    this.linksCharacters = location.residents;
+
+    // this.linksCharacters = location.residents;
+    // console.log(location)
+    // console.log(location.residents)
+
 
     for (let link of this.linksCharacters) {
       const segments = new URL(link).pathname.split('/');

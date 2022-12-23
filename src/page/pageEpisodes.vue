@@ -9,7 +9,7 @@
   </div>
 
   <list-episodes :episodes_data="this.episodes"></list-episodes>
-
+  <div v-if="notFound">not found</div>
   <buttons-pagination @click="showMoreItems" v-if="!hideButtonMore"></buttons-pagination>
 </template>
 
@@ -25,11 +25,13 @@ export default {
   data(){
     return{
       episodes:[],
-      season: Number,
-      pages: Number,
+      episodesNextPage: '',
+      season: 0,
+      stopScroll: false,
+      notFound: false,
       hideButtonMore: false,
-      nextPage: 2,
-      searchName: ''
+      searchName: '',
+      linkApi: 'https://rickandmortyapi.com/api/episode/',
     }
   },
   methods:{
@@ -40,53 +42,58 @@ export default {
     },
 
     async changeSeason(){
+      this.stopScroll = true
+      let link;
 
-      if(!this.season == 0){
-        const linkApi = (id = this.season) => `https://rickandmortyapi.com/api/episode/?episode=S0${id}`
-        const res = await fetch(linkApi());
-        const episodes = await res.json();
+      try {
+
+        if(!this.season == 0){
+          (this.searchName === '')
+              ? link = (id = this.season) => `${this.linkApi}?episode=S0${id}`
+              : link = (id = this.season, name = this.searchName) => `${this.linkApi}?episode=S0${id}&name=${name}`
+        } else{
+          (this.searchName === '')
+              ? link = () => this.linkApi
+              : link = (name = this.searchName) => `${this.linkApi}?name=${name}`
+          console.log(link())
+        }
+
+        const response = await fetch(link());
+        const episodes = await response.json();
         this.episodes = episodes.results;
-
-        this.hideButtonMore = true
-      } else {
-        const linkApi = `https://rickandmortyapi.com/api/episode`
-        const res = await fetch(linkApi);
-        const episodes = await res.json();
-        this.episodes = episodes.results;
-
-        this.hideButtonMore = false
-        this.nextPage = 2
+        this.notFound = false;
+        // показывать кнопку more если есть следующая страница в ответе от сервера
+        (episodes.info.next) ? this.hideButtonMore = false : this.hideButtonMore = true
+      } catch (e){
+        this.notFound = true
       }
-
-      console.log(this.episodes)
     },
     // Сортировка по сезонам
 
 
     // Бесконечная прокрутка START
     async showMoreItems(){
-      const list = this.episodes;
-      const loadPage = this.nextPage;
+      try {
+        const nextPage = this.episodesNextPage;
+        const list = this.episodes;
+        const response = await fetch(nextPage);
+        const episodes = await response.json();
+        this.episodesNextPage = episodes.info.next
 
-      const linkApi = (page = loadPage) => `https://rickandmortyapi.com/api/episode/?page=${page}`
-      const res = await fetch(linkApi());
-      const episodes = await res.json();
-      this.pages = episodes.info.pages
-
-      if(this.nextPage <= this.pages){
         const all = list.concat(episodes.results);
         this.episodes = all
         this.hideButtonMore = true
         this.listenerScroll();
+        this.stopScroll = false
+      } catch (e){
+        console.log('end')
       }
     },
 
     listenerScroll(){
       window.onscroll = () => {
         let bottomOfWindow = document.documentElement.scrollTop + window.innerHeight === document.documentElement.offsetHeight;
-
-        if (bottomOfWindow && this.nextPage < this.pages ) {
-          this.nextPage = this.nextPage + 1;
+        if (bottomOfWindow && !this.stopScroll) {
           this.showMoreItems()
         }
       };
@@ -98,29 +105,52 @@ export default {
       this.searchName = text
     },
     async filterEpisodes(){
-      console.log(this.searchName)
-      const searchName = this.searchName;
-      if(searchName == ''){
-        this.hideButtonMore = false;
+      this.stopScroll = true
+
+      const search = this.searchName;
+      const season = this.season;
+      let link;
+
+      if(!search == ''){
+        (!season == 0)
+            ? link = (name = search, id = season) => `${this.linkApi}?episode=S0${id}&name=${name}`
+            : link = (name = search) => `${this.linkApi}?name=${name}`
+
+        console.log(link())
       } else {
-        this.hideButtonMore = true;
+        (!season == 0)
+            ? link = (id = season) => `${this.linkApi}?episode=S0${id}`
+            : link = () => this.linkApi
       }
 
-      const linkApi = (name = searchName) => `https://rickandmortyapi.com/api/episode/?name=${name}`
-      const res = await fetch(linkApi());
-      const episodes = await res.json();
+      console.log(!season == 0)
+      console.log(link())
 
-      this.episodes = episodes.results;
+      let response;
+      let episodes;
+
+      try{
+        response = await fetch(link());
+        episodes = await response.json();
+        this.episodes = episodes.results;
+        this.episodesNextPage = episodes.info.next;
+        this.notFound = false;
+        (this.episodesNextPage) ? this.hideButtonMore = false : this.hideButtonMore = true
+      } catch (e){
+        this.notFound = true
+      }
     },
   // Поиск по названию
 
   },
 
   async mounted() {
-    const linkApi = `https://rickandmortyapi.com/api/episode/`;
-    const res = await fetch(linkApi);
-    const episodes = await res.json();
+    const link = this.linkApi
+    const response = await fetch(link);
+    const episodes = await response.json();
     this.episodes = episodes.results;
+    // при отрисовке запись следующей страницы без query параметров
+    this.episodesNextPage = episodes.info.next;
   },
   watch:{
     season(){
